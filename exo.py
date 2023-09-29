@@ -1,4 +1,9 @@
 import random
+from simple_term_menu import TerminalMenu
+import os
+from colorama import Fore, Back, Style, init
+
+init()
 
 mask_list = [
 	"255.0.0.0",
@@ -28,7 +33,6 @@ mask_list = [
 ]
 
 def	gen_random_ipaddress():
-	#table of 4 numbers separated by dots
 	ipaddress = []
 	for i in range(4):
 		ipaddress.append(str(random.randint(0, 255)))
@@ -48,28 +52,86 @@ def	network_cal(ip, mask):
 		ip_octet.append(str(int(ip[i]) & int(mask[i])))
 	return ".".join(ip_octet)
 
-def	exercise(ip, mask):
+
+def		exercise_default(n_retry):
+	ip = gen_random_ipaddress()
+	mask = get_random_mask()
+	n_fail = 0
 	print("IP address: " + ip)
 	print("Mask: " + mask)
 	print("What is the network address of this IP address?")
-	network = input(">")
-	for i in range(2):
+	while n_fail <= n_retry:
+		network = input(">")
 		if network_cal(ip, mask) == network:
-			print("Correct!")
-			return
+			print(Fore.WHITE + Style.NORMAL + Back.GREEN +"\nCorrect \o/\n" +Fore.RESET + Back.RESET)
+			return True
 		else:
-			# print("Wrong! Try again. + remaining tries")
-			print("Wrong! Try again.")
-			print(str(2 - i) + " remaining tries")
-			network = input(">")
-	print("The correct answer is: " + network_cal(ip, mask))
+			print(str(n_retry - n_fail) + " remaining tries\n")
+			n_fail += 1
+	if n_retry == 0:
+		show_answer(ip, mask)
+	return False
+
+
+def	explanation():
+	print("Explanation")#TODO add explanation of the exercise and the answer
 	return
+
+def	show_answer(ip, mask):
+	print("The correct answer is: " + network_cal(ip, mask))
+	input("Press enter to back to menu")
+
+def	series_challenge():
+	nb_correct_answer = 0
+	while exercise_default(0) != False:
+		nb_correct_answer += 1
+	input(f"Your score are {nb_correct_answer} \n") #TODO a ameliorer
+	return
+
+
+def	exercise():
+	list = ["Retry", "Explanation", "Back"]
+	list_func = [exercise, explanation, menu_choice]
+	list2 = ["Retry", "Explanation", "Show Answer", "Back"]
+	list_func2 = [exercise, explanation, show_answer, menu_choice]
+	if exercise_default(2) == True:
+		menu = TerminalMenu(list)
+		menu_index = menu.show()
+		if menu_index < len(list_func) and menu_index >= 0:
+			list_func[menu_index]()
+		else:
+			print("Wrong input")
+	else:
+		menu = TerminalMenu(list2)
+		menu_index = menu.show()
+		if menu_index < len (list_func2) and menu_index >= 0:
+			list_func2[menu_index]()
+		else:
+			print("Wrong input")
+	return
+
+def	menu_choice():
+	option = ["Exercise", "Series challenge", "Timer Challenge", "Quit"]
+	menu = TerminalMenu(option, title="Subnet training")
+	quitting = False
+	os.system("clear")
+	menu_index = menu.show()
+	if menu_index == 0:
+		os.system("clear")
+		exercise()
+	elif menu_index == 1:
+		os.system("clear")
+		series_challenge()
+	elif menu_index == 2:
+		os.system("clear")
+		print("Timer Challenge")
+	elif menu_index == 3:
+		quitting = True
+	os.system("clear")
 
 def	main():
 	print("Welcome to the IP address exercise!")
-	ip = gen_random_ipaddress()
-	mask = get_random_mask()
-	exercise(ip, mask)
+	menu_choice()
 	return
 
 main()
