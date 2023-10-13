@@ -63,14 +63,14 @@ def		exercise_default(n_retry):
 	while n_fail <= n_retry:
 		network = input(">")
 		if network_cal(ip, mask) == network:
-			print(Fore.WHITE + Style.NORMAL + Back.GREEN +"\nCorrect \o/\n" +Fore.RESET + Back.RESET)
+			print(Fore.WHITE + Style.NORMAL + Back.GREEN +"\nCorrect \o/\n" + Fore.RESET + Back.RESET)
 			return True
 		else:
 			print(str(n_retry - n_fail) + " remaining tries\n")
 			n_fail += 1
 	if n_retry == 0:
 		show_answer(ip, mask)
-	return False
+	return False, ip, mask
 
 
 def	explanation():
@@ -94,7 +94,8 @@ def	exercise():
 	list_func = [exercise, explanation, menu_choice]
 	list2 = ["Retry", "Explanation", "Show Answer", "Back"]
 	list_func2 = [exercise, explanation, show_answer, menu_choice]
-	if exercise_default(2) == True:
+	succes, ip, mask = exercise_default(2)
+	if succes == True:
 		menu = TerminalMenu(list)
 		menu_index = menu.show()
 		if menu_index < len(list_func) and menu_index >= 0:
@@ -104,8 +105,18 @@ def	exercise():
 	else:
 		menu = TerminalMenu(list2)
 		menu_index = menu.show()
-		if menu_index < len (list_func2) and menu_index >= 0:
-			list_func2[menu_index]()
+		if menu_index == 0:
+			os.system("clear")
+			exercise()
+		elif menu_index == 1:
+			os.system("clear")
+			explanation()
+		elif menu_index == 2:
+			os.system("clear")
+			show_answer(ip, mask)
+		elif menu_index == 3:
+			os.system("clear")
+			menu_choice()
 		else:
 			print("Wrong input")
 	return
@@ -113,7 +124,6 @@ def	exercise():
 def	menu_choice():
 	option = ["Exercise", "Series challenge", "Timer Challenge", "Quit"]
 	menu = TerminalMenu(option, title="Subnet training")
-	quitting = False
 	os.system("clear")
 	menu_index = menu.show()
 	if menu_index == 0:
@@ -126,8 +136,7 @@ def	menu_choice():
 		os.system("clear")
 		print("Timer Challenge")
 	elif menu_index == 3:
-		quitting = True
-	os.system("clear")
+		os.system("clear")
 
 def	main():
 	print("Welcome to the IP address exercise!")
