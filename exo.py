@@ -64,12 +64,12 @@ def		exercise_default(n_retry):
 		network = input(">")
 		if network_cal(ip, mask) == network:
 			print(Fore.WHITE + Style.NORMAL + Back.GREEN +"\nCorrect \o/\n" + Fore.RESET + Back.RESET)
-			return True
+			return True , ip, mask
 		else:
 			print(str(n_retry - n_fail) + " remaining tries\n")
 			n_fail += 1
-	if n_retry == 0:
-		show_answer(ip, mask)
+	# if n_retry == 0:
+	# 	show_answer(ip, mask)
 	return False, ip, mask
 
 
@@ -80,28 +80,37 @@ def	explanation():
 def	show_answer(ip, mask):
 	print("The correct answer is: " + network_cal(ip, mask))
 	input("Press enter to back to menu")
+	menu_choice()
 
-def	series_challenge():
+def series_challenge():
 	nb_correct_answer = 0
-	while exercise_default(0) != False:
-		nb_correct_answer += 1
-	input(f"Your score are {nb_correct_answer} \n") #TODO a ameliorer
-	return
+	while True:  # Boucle infinie jusqu'à ce que l'utilisateur échoue
+		success, ip, mask = exercise_default(0)
+		if success:
+			nb_correct_answer += 1
+		else:
+			break  # Sort de la boucle si l'utilisateur échoue
+	print(f"Your score is {nb_correct_answer}\n")
+	show_answer(ip, mask)
 
 
 def	exercise():
 	list = ["Retry", "Explanation", "Back"]
 	list_func = [exercise, explanation, menu_choice]
 	list2 = ["Retry", "Explanation", "Show Answer", "Back"]
-	list_func2 = [exercise, explanation, show_answer, menu_choice]
 	succes, ip, mask = exercise_default(2)
 	if succes == True:
 		menu = TerminalMenu(list)
 		menu_index = menu.show()
-		if menu_index < len(list_func) and menu_index >= 0:
-			list_func[menu_index]()
-		else:
-			print("Wrong input")
+		if menu_index == 0:
+			os.system("clear")
+			exercise()
+		elif menu_index == 1:
+			os.system("clear")
+			explanation()
+		elif menu_index == 2:
+			os.system("clear")
+			menu_choice()
 	else:
 		menu = TerminalMenu(list2)
 		menu_index = menu.show()
@@ -137,6 +146,7 @@ def	menu_choice():
 		print("Timer Challenge")
 	elif menu_index == 3:
 		os.system("clear")
+		return
 
 def	main():
 	print("Welcome to the IP address exercise!")
