@@ -2,6 +2,8 @@ import random
 from simple_term_menu import TerminalMenu
 import os
 from colorama import Fore, Back, Style, init
+import fontstyle
+
 
 init()
 
@@ -65,6 +67,8 @@ def		exercise_default(n_retry):
 		if network_cal(ip, mask) == network:
 			print(Fore.WHITE + Style.NORMAL + Back.GREEN +"\nCorrect \o/\n" + Fore.RESET + Back.RESET)
 			return True , ip, mask
+		elif network == "back":
+			return False, None, None
 		else:
 			print(str(n_retry - n_fail) + " remaining tries\n")
 			n_fail += 1
@@ -87,7 +91,12 @@ def series_challenge():
 	while True:  # Boucle infinie jusqu'à ce que l'utilisateur échoue
 		success, ip, mask = exercise_default(0)
 		if success:
-			nb_correct_answer += 1
+			#Add power 2 to nb_correct_answer
+			if nb_correct_answer == 0:
+				nb_correct_answer = 1
+			else:
+				nb_correct_answer *= 2
+			print(f"Your score is {nb_correct_answer}\n")
 		else:
 			break  # Sort de la boucle si l'utilisateur échoue
 	print(f"Your score is {nb_correct_answer}\n")
@@ -111,6 +120,9 @@ def	exercise():
 		elif menu_index == 2:
 			os.system("clear")
 			menu_choice()
+	elif ip == None and mask == None:
+		os.system("clear")
+		menu_choice()
 	else:
 		menu = TerminalMenu(list2)
 		menu_index = menu.show()
@@ -134,6 +146,10 @@ def	menu_choice():
 	option = ["Exercise", "Series challenge", "Timer Challenge", "Quit"]
 	menu = TerminalMenu(option, title="Subnet training")
 	os.system("clear")
+	print("Welcome to the IP address exercise!\n")
+	# text = fontstyle.apply('GEEKSFORGEEKS', 'bold/Italic/red/GREEN_BG')
+	# print(text)
+	print(fontstyle.apply('Welcome to the IP address exercise!', 'bold/Italic/yellow/GRAY_BG'))
 	menu_index = menu.show()
 	if menu_index == 0:
 		os.system("clear")
@@ -149,8 +165,8 @@ def	menu_choice():
 		return
 
 def	main():
-	print("Welcome to the IP address exercise!")
 	menu_choice()
+	os.system("clear")
 	return
 
 main()
