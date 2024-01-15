@@ -4,7 +4,6 @@ import os
 from colorama import Fore, Back, Style, init
 import fontstyle
 
-
 init()
 
 mask_list = [
@@ -54,10 +53,39 @@ def	network_cal(ip, mask):
 		ip_octet.append(str(int(ip[i]) & int(mask[i])))
 	return ".".join(ip_octet)
 
+def	cidr_cal(mask):
+	mask = mask.split(".")
+	cidr = 0
+	for octet in mask:
+		if int(octet) == 255:
+			cidr += 8
+		elif int(octet) == 0:
+			cidr += 0
+		else:
+			octet = bin(int(octet))
+			octet = octet[2:]
+			for bit in octet:
+				if bit == "1":
+					cidr += 1
+	return cidr
+
+def	broadcast_cal(ip, mask):
+	ip = ip.split(".")
+	mask = mask.split(".")
+	broadcast = []
+	ip_octet = []
+	#reverse mask 255 = 0
+	mask = [255 - int(i) for i in mask]
+	for i in range(4):
+		ip_octet.append(str(int(ip[i]) | int(mask[i])))
+	return ".".join(ip_octet)
+
 
 def		exercise_default(n_retry):
 	ip = gen_random_ipaddress()
 	mask = get_random_mask()
+	cidr = cidr_cal(mask)
+	broadcast_cal(ip, mask)
 	n_fail = 0
 	print("IP address: " + ip)
 	print("Mask: " + mask)
@@ -66,7 +94,23 @@ def		exercise_default(n_retry):
 		network = input(">")
 		if network_cal(ip, mask) == network:
 			print(Fore.WHITE + Style.NORMAL + Back.GREEN +"\nCorrect \o/\n" + Fore.RESET + Back.RESET)
-			return True , ip, mask
+			print("What is the CIDR of this mask?\n")
+			while n_fail <= n_retry:
+				cidr_result = input(">")
+				if (int(cidr_result) == cidr):
+					print(Fore.WHITE + Style.NORMAL + Back.GREEN +"\nCorrect \o/\n" + Fore.RESET + Back.RESET)
+					print("What is the broadcast address of this IP address?\n")
+					while n_fail <= n_retry:
+						broadcast_result = input(">")
+						if (broadcast_cal(ip, mask) == broadcast_result):
+							print(Fore.WHITE + Style.NORMAL + Back.GREEN +"\nCorrect \o/\n" + Fore.RESET + Back.RESET)
+							return True, ip, mask
+						else:
+							print(str(n_retry - n_fail) + " remaining tries\n")
+							n_fail += 1
+				else:
+					print(str(n_retry - n_fail) + " remaining tries\n")
+					n_fail += 1
 		elif network == "back":
 			return False, None, None
 		else:
